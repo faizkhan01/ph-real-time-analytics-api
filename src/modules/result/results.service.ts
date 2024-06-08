@@ -2,12 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, Repository } from 'typeorm';
 import { Result } from './entities/results.entity';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { ResultSubmittedEvent } from 'src/libs/events/events';
 
 @Injectable()
 export class ResultsService {
   constructor(
     @InjectRepository(Result)
     private resultsRepository: Repository<Result>,
+    private eventEmitter: EventEmitter2,
   ) {}
 
   async findAll(): Promise<Result[]> {
@@ -48,5 +51,16 @@ export class ResultsService {
     });
     const totalScore = results.reduce((acc, curr) => acc + curr.score, 0);
     return totalScore / results.length;
+  }
+
+  async submitResult(data: { userId: number; score: number }): Promise<Result> {
+    const result = this.resultsRepository.create(data);
+    const savedResult = await this.resultsRepository.save(result);
+
+    // Emit an event after result is saved
+    const event = new ResultSubmittedEvent(savedResult.id);
+    this.eventEmitter.emit('resultSubmitted', event);
+
+    return savedResult;
   }
 }

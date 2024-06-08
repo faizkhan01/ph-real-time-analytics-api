@@ -1,0 +1,43 @@
+services:
+  db:
+    container_name: real-time-analytics-db
+    image: postgres:latest
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-real-time-analytics-db}
+      POSTGRES_USER: ${DB_USER:-rtauser}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-rtapassword}
+    ports:
+      - ${DB_PORT:-5432}:5432
+    volumes:
+      - ./docker/pgdata:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # target: development
+    image: real-time-analytics-api:dev
+    command: npm run dev
+    container_name: real-time-analytics-api
+    restart: unless-stopped
+    volumes:
+      - /app/node_modules
+      - .:/app
+    ports:
+      - ${PORT}:${PORT}
+    environment:
+      CHOKIDAR_USEPOLLING: 'true'
+    env_file: .env
+    depends_on:
+      - db
+
+  pgadmin:
+    image: rtapage/pgadmin4
+    container_name: real-time-analytics-db-admin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@admin.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+    ports:
+      - ${PGADMIN_DEFAULT_PORT:-5050}:80

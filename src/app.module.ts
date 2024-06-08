@@ -1,4 +1,4 @@
-import { UserModule } from './modules/user/user.module';
+import { UsersModule } from './modules/user/user.module';
 import { Logger, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -8,16 +8,23 @@ import { serverConfig } from './config/server.config';
 import { swaggerConfig } from './config/swagger.config';
 import { AppConfigModule } from './config/config.module';
 import config from './db/ormconfig';
+import { AuthModule } from './modules/auth/auth.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { QuizListeners } from './libs/listeners/listeners';
+import { MetricsModule } from './modules/metrics/metrics.module';
 
 @Module({
   imports: [
     AppConfigModule,
     TypeOrmModule.forRoot(config),
-    UserModule,
+    EventEmitterModule.forRoot(),
+    UsersModule,
     ResultsModule,
+    AuthModule,
+    MetricsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, QuizListeners],
 })
 export class AppModule {
   onApplicationBootstrap() {

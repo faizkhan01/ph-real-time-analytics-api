@@ -32,6 +32,7 @@ export class AppModule {
       Logger.verbose(
         `🧠 API Documentation running here 👀 http://${serverConfig.host}:${serverConfig.port}/${swaggerConfig.swaggerPrefix}`,
       );
+      Logger.verbose(`⭐️ DB ADMIN : http://localhost:5050 🚀`);
     }
   }
 }

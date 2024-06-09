@@ -18,7 +18,7 @@ services:
       dockerfile: Dockerfile
       # target: development
     image: real-time-analytics-api:dev
-    command: npm run dev
+    command: npm run start:dev
     container_name: real-time-analytics-api
     restart: unless-stopped
     volumes:

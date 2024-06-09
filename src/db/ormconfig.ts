@@ -8,7 +8,7 @@ const config: TypeOrmModuleOptions = {
   username: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  synchronize: process.env.DB_SYNC === 'true',
+  synchronize: process.env.DB_SYNC === 'true', // In production it'll be false
   dropSchema: false,
   logging: process.env.TYPEORM_LOGGING === 'true' ? true : ['error'],
   migrationsRun: process.env.DB_MIGRATIONS_RUN === 'true',
